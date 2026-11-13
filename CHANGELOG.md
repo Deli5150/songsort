@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.1
+
+- Previews are never left muted: YouTube's player remembers mute between sessions, so SongSort now
+  always sets it explicitly.
+- README screenshots.
+
 ## 1.0.0
 
 First native release — a SwiftUI port of the Glaze SongSort app.

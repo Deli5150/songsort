@@ -19,6 +19,10 @@ client `WEB_REMIX`) calls with a SAPISIDHASH header. Sibling project: `~/YTCurat
 - Self-test without UI input (needs a signed-in session): run `build/SongSort.app/Contents/MacOS/SongSort`
   with `SONGSORT_SELFTEST=1` — logs the top card's playlist membership and plays a **muted** preview
   into diagnostics.log. `SONGSORT_DUMP_DIR=<dir>` writes the raw library browse to `<dir>/library.json`.
+  `SONGSORT_SCREENSHOT=deck|add|sources` opens that state on launch (README shots in docs/screenshots;
+  capture with `screencapture -o -l <id>` of the sheet's window id — it includes the parent window).
+  Test hooks keep the player muted; PreviewPlayer re-asserts mute/unmute every poll because YouTube
+  persists mute in its own storage.
   Verified 2026-11-13 signed in: 351 liked songs, 11 playlists, preview playing ~1s after request.
 
 ## Layout

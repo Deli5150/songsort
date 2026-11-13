@@ -90,6 +90,9 @@ final class AppModel {
     // MARK: - Lifecycle
 
     func bootstrap() async {
+        // Test hooks never make sound (auto-play would otherwise start a preview).
+        let env = ProcessInfo.processInfo.environment
+        player.muted = env["SONGSORT_SCREENSHOT"] != nil || env["SONGSORT_SELFTEST"] == "1"
         updater.start()
         if await YouTubeSession.shared.isLoggedIn() {
             await didSignIn()
@@ -113,6 +116,13 @@ final class AppModel {
         player.warmUp()
         Task { await client.prefetchMembership() }
         if ProcessInfo.processInfo.environment["SONGSORT_SELFTEST"] == "1" { Task { await selfTest() } }
+        // README screenshots without UI input: open a sheet once the deck is up.
+        let screenshot = ProcessInfo.processInfo.environment["SONGSORT_SCREENSHOT"]
+        switch screenshot {
+        case "add": if let song = activeSong { requestAdd(song) }
+        case "sources": sheet = .pickSource
+        default: break
+        }
     }
 
     /// Read-only end-to-end check (see CLAUDE.md): membership for the top card, then a muted

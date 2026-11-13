@@ -9,6 +9,21 @@ YouTube Music access is unofficial: you sign in on the real Google page inside t
 session cookies drive YouTube Music's internal web API (InnerTube). No API key or OAuth app is
 involved, and nothing leaves your Mac except requests to YouTube and GitHub (update checks).
 
+<p align="center">
+  <img src="docs/screenshots/deck.png" width="300" alt="The card deck: cover art, song details, and the skip / play / add buttons">
+  <img src="docs/screenshots/add.png" width="300" alt="Adding a song to several playlists at once">
+</p>
+
+Drag a card right (or press →) to file it. The add sheet lists every playlist, marks the ones that
+already hold the song, and adds to all the ones you check at once. The avatars in the card's corner
+show where a song is already saved.
+
+<p align="center">
+  <img src="docs/screenshots/sources.png" width="300" alt="Choosing which playlist to sort">
+</p>
+
+Sort Liked Songs or any of your playlists (⌘O); progress is kept per playlist.
+
 ## Features
 
 - **Card deck** — drag a card right to add, left to skip, or use ← / → and Space to play.

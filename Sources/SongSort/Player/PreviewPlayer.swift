@@ -200,7 +200,11 @@ final class PreviewPlayer: NSObject {
 
     private func poll() {
         guard let id = videoId else { stopPolling(); return }
-        if muted { evaluate("document.getElementById('movie_player')?.mute()") }
+        // YouTube persists mute across sessions, so always assert the state we want — a
+        // muted test run must not leave real previews silent.
+        evaluate(muted
+            ? "document.getElementById('movie_player')?.mute()"
+            : "(() => { const p = document.getElementById('movie_player'); if (p && p.isMuted && p.isMuted()) p.unMute(); })()")
         evaluate(Self.pollScript) { [weak self] result in
             guard let self, self.videoId == id, self.pollTimer != nil,
                   let json = result as? String,
