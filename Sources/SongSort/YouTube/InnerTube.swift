@@ -119,7 +119,9 @@ actor InnerTube {
     private let urlSession: URLSession
     private var clientVersion: String?
     private var visitorData: String?
-    private var configCookie: String?
+    /// SAPISID the scraped config belongs to. Other cookies rotate between calls, so the whole
+    /// header isn't a usable "same session" key.
+    private var configSession: String?
 
     init() {
         let config = URLSessionConfiguration.ephemeral
@@ -132,7 +134,7 @@ actor InnerTube {
     func reset() {
         clientVersion = nil
         visitorData = nil
-        configCookie = nil
+        configSession = nil
     }
 
     private func cookie() async throws -> String {
@@ -170,8 +172,9 @@ actor InnerTube {
     /// Scrape the live YouTube Music client version + visitor data once per session, so
     /// authenticated calls aren't rejected for a stale version.
     private func ensureConfig(cookie: String) async {
-        if clientVersion != nil, configCookie == cookie { return }
-        configCookie = cookie
+        let session = Self.cookieValue(cookie, "SAPISID") ?? Self.cookieValue(cookie, "__Secure-3PAPISID") ?? ""
+        if configSession == session { return }
+        configSession = session
         var request = URLRequest(url: URL(string: "\(Self.origin)/?hl=en")!)
         request.setValue(cookie, forHTTPHeaderField: "Cookie")
         request.setValue(YouTubeSession.safariUserAgent, forHTTPHeaderField: "User-Agent")

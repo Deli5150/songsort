@@ -72,6 +72,10 @@ actor MusicClient {
 
     private func fetchPlaylists() async throws -> [Playlist] {
         let first = try await api.call("browse", ["browseId": "FEmusic_liked_playlists"], priority: true)
+        if let dir = ProcessInfo.processInfo.environment["SONGSORT_DUMP_DIR"], let raw = first.raw,
+           let data = try? JSONSerialization.data(withJSONObject: raw) {
+            try? data.write(to: URL(fileURLWithPath: dir).appending(path: "library.json"))
+        }
         var page = Parsers.libraryPlaylists(first)
         var playlists = page.playlists
         var pages = 0
@@ -81,7 +85,7 @@ actor MusicClient {
             for p in page.playlists where !playlists.contains(where: { $0.id == p.id }) { playlists.append(p) }
             pages += 1
         }
-        Diagnostics.write("playlists: \(playlists.count)")
+        Diagnostics.write("playlists: \(playlists.count) — \(playlists.map(\.title).joined(separator: " | "))")
         return playlists.sorted { $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending }
     }
 

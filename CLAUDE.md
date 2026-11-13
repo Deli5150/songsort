@@ -16,6 +16,11 @@ client `WEB_REMIX`) calls with a SAPISIDHASH header. Sibling project: `~/YTCurat
   .app, relaunches. End-to-end test without UI: copy the app somewhere, set its
   CFBundleShortVersionString lower, re-sign ad-hoc, run its binary with `SONGSORT_AUTO_INSTALL_UPDATE=1`.
 
+- Self-test without UI input (needs a signed-in session): run `build/SongSort.app/Contents/MacOS/SongSort`
+  with `SONGSORT_SELFTEST=1` — logs the top card's playlist membership and plays a **muted** preview
+  into diagnostics.log. `SONGSORT_DUMP_DIR=<dir>` writes the raw library browse to `<dir>/library.json`.
+  Verified 2026-11-13 signed in: 351 liked songs, 11 playlists, preview playing ~1s after request.
+
 ## Layout
 - `YouTube/InnerTube.swift` — transport + adaptive `RequestGate` (priority lane for user actions).
 - `YouTube/MusicClient.swift` — every endpoint + caches (songs per playlist, library playlists,

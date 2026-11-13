@@ -32,6 +32,8 @@ final class PreviewPlayer: NSObject {
         }
     }
 
+    /// Test hook (SONGSORT_SELFTEST): keep the player muted.
+    @ObservationIgnored var muted = false
     @ObservationIgnored private var webView: WKWebView?
     @ObservationIgnored private var window: NSWindow?
     @ObservationIgnored private var pollTimer: Timer?
@@ -198,6 +200,7 @@ final class PreviewPlayer: NSObject {
 
     private func poll() {
         guard let id = videoId else { stopPolling(); return }
+        if muted { evaluate("document.getElementById('movie_player')?.mute()") }
         evaluate(Self.pollScript) { [weak self] result in
             guard let self, self.videoId == id, self.pollTimer != nil,
                   let json = result as? String,

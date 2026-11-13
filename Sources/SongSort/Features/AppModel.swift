@@ -112,6 +112,24 @@ final class AppModel {
         await loadSongs()
         player.warmUp()
         Task { await client.prefetchMembership() }
+        if ProcessInfo.processInfo.environment["SONGSORT_SELFTEST"] == "1" { Task { await selfTest() } }
+    }
+
+    /// Read-only end-to-end check (see CLAUDE.md): membership for the top card, then a muted
+    /// preview, all written to diagnostics.log.
+    private func selfTest() async {
+        guard let song = activeSong else { Diagnostics.write("selftest: no active song"); return }
+        let rows = await loadMemberships(for: song) ?? []
+        Diagnostics.write("selftest: \(song.videoId) “\(song.title)” in \(rows.filter(\.containsSong).map(\.playlist.title))")
+        player.muted = true
+        player.play(song.videoId)
+        let started = ContinuousClock.now
+        for _ in 0..<40 {
+            try? await Task.sleep(for: .milliseconds(500))
+            Diagnostics.write("selftest: player \(player.status) progress=\(String(format: "%.2f", player.progress)) t+\(ContinuousClock.now - started)")
+            if player.progress > 0.15 { break }
+        }
+        player.stop()
     }
 
     func signOut() async {
